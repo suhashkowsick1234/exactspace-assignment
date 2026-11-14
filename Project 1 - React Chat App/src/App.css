@@ -613,6 +613,13 @@ body {
   z-index: 1000;
 }
 
+.emoji-mart-popover-container {
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: popInEmoji 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .dark-emoji-picker {
   width: 350px;
   height: 420px;
