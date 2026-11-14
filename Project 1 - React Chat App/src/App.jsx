@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatHeader from './components/ChatHeader';
 import ChatWindow from './components/ChatWindow';
@@ -22,10 +22,12 @@ export default function App() {
     addChannel
   } = useChat();
 
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   return (
     <div className="pubnub-app-container">
       <div className="pubnub-chat-shell">
-        {/* Left Navigation Sidebar */}
+        {/* Left Navigation Sidebar with responsive mobile drawer support */}
         <Sidebar
           channels={channels}
           activeChannelId={activeChannelId}
@@ -35,11 +37,17 @@ export default function App() {
           onUpdateUser={updateCurrentUser}
           isRandomUserMode={isRandomUserMode}
           onToggleRandomUserMode={() => setIsRandomUserMode((prev) => !prev)}
+          isOpenOnMobile={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
 
         {/* Right Main Chat Panel */}
         <div className="pubnub-main-chat">
-          <ChatHeader activeChannel={activeChannel} onlineCount={3} />
+          <ChatHeader
+            activeChannel={activeChannel}
+            onlineCount={3}
+            onToggleSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
+          />
           <ChatWindow
             messages={messages}
             onLike={likeMessage}

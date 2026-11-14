@@ -208,6 +208,21 @@ export default function ChatInput({ onSendMessage }) {
             <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="2.5" />
           </svg>
         </button>
+
+        {/* Mobile / Quick Send Button when text is present */}
+        {inputText.trim().length > 0 && (
+          <button
+            type="button"
+            className="input-send-trigger-btn"
+            onClick={handleSend}
+            title="Send message (Enter)"
+            aria-label="Send message"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" className="send-svg-icon">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+          </button>
+        )}
       </div>
     </footer>
   );

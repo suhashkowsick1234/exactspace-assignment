@@ -253,31 +253,69 @@ body {
 }
 
 /* ==========================================================================
-   RESPONSIVENESS
+   RESPONSIVENESS (Phone & Mobile / Tablet / Laptop)
    ========================================================================== */
 
 @media (max-width: 680px) {
   .photo-gallery-app {
-    padding: 24px 16px;
+    padding: 20px 14px 60px 14px;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .photo-gallery-header {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
   }
 
   .photo-gallery-title {
-    font-size: 2rem;
+    font-size: 1.85rem;
+    letter-spacing: -0.3px;
+  }
+
+  .photo-feed-column {
+    gap: 16px;
   }
 
   .photo-gallery-row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
   }
 
   .photo-thumb-container {
     width: 100%;
-    height: 210px;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    max-height: 240px;
+    border-radius: 8px;
   }
 
   .photo-info-col {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .photo-author-label {
+    font-size: 0.98rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .thumbs-up-btn {
+    padding: 8px 16px;
+    min-height: 40px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    touch-action: manipulation;
   }
 }

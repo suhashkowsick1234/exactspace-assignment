@@ -602,6 +602,38 @@ body {
   height: 24px;
 }
 
+.input-send-trigger-btn {
+  background-color: var(--primary-blue);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 102, 255, 0.35);
+}
+
+.input-send-trigger-btn:hover {
+  background-color: var(--primary-blue-hover);
+  transform: scale(1.06);
+}
+
+.input-send-trigger-btn:active {
+  transform: scale(0.94);
+}
+
+.send-svg-icon {
+  width: 15px;
+  height: 15px;
+  transform: translateX(1px);
+}
+
 /* ==========================================================================
    FIX 2: DARK THEME EMOJI PICKER (Matching Image 3 & Image 4)
    ========================================================================== */
@@ -1080,37 +1112,173 @@ body {
   background-color: var(--primary-blue-hover);
 }
 
+/* Mobile Hamburger Toggle & Close Controls */
+.mobile-sidebar-toggle-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dark);
+  cursor: pointer;
+  margin-right: 12px;
+  flex-shrink: 0;
+  background-color: #F8FAFC;
+}
+
+.mobile-sidebar-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar-mobile-close-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-light);
+  background-color: #F8FAFC;
+}
+
+.mobile-bar-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.sidebar-mobile-close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.sidebar-mobile-backdrop {
+  display: none;
+}
+
 /* ==========================================================================
-   RESPONSIVENESS
+   RESPONSIVENESS (Phone & Mobile Devices)
    ========================================================================== */
 
 @media (max-width: 768px) {
   .pubnub-app-container {
     padding: 0;
+    height: 100vh;
+    height: 100dvh;
   }
   
   .pubnub-chat-shell {
     height: 100vh;
+    height: 100dvh;
     border-radius: 0;
+    border: none;
+    box-shadow: none;
+    position: relative;
   }
 
+  .mobile-sidebar-toggle-btn {
+    display: flex;
+  }
+
+  .sidebar-mobile-close-bar {
+    display: flex;
+  }
+
+  /* Slide-out mobile drawer */
   .chat-sidebar {
-    width: 220px;
-    min-width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 80vw;
+    z-index: 2100;
+    background-color: #FFFFFF;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.35);
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .pubnub-chat-header,
-  .pubnub-chat-feed,
+  .chat-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 2050;
+  }
+
+  .pubnub-chat-header {
+    padding: 12px 16px;
+  }
+
+  .channel-title {
+    font-size: 1.05rem;
+  }
+
+  .channel-description {
+    font-size: 0.78rem;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pubnub-chat-feed {
+    padding: 16px;
+  }
+
+  .pubnub-message-row {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .message-content-col {
+    max-width: 88%;
+  }
+
+  .message-bubble {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
   .pubnub-chat-input-area {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 8px 12px 14px;
+  }
+
+  .chat-input-pill-container {
+    padding: 4px 10px 4px 16px;
   }
 
   .emoji-picker-anchor {
-    right: 16px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    bottom: calc(100% + 8px);
+    display: flex;
+    justify-content: center;
+    max-width: 100vw;
+    padding: 0 10px;
   }
 
-  .dark-emoji-picker {
-    width: 310px;
+  .emoji-mart-popover-container {
+    max-width: calc(100vw - 20px);
+  }
+
+  .mention-dropdown {
+    left: 12px;
+    right: 12px;
+    width: auto;
   }
 }
