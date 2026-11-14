@@ -4,8 +4,20 @@ A technical assessment submission for the **Exactspace Frontend / UI Developer I
 
 ---
 
+## 🚀 Live Production Deployments
+
+| Application | Description | Live Vercel URL |
+|---|---|---|
+| **Project 1 — React Chat App** | PubNub/Slack-style collaboration chat with full phone emoji picker, strictly 1-like-per-person toggle, channels, and random user mode | 🌐 **[View Live Chat App](https://exactspace-assignment-project-1-rea.vercel.app/)** |
+| **Project 2 — React Photo Gallery** | Single-column photo feed with instant infinite scrolling, Font Awesome reactions, and centered title | 🌐 **[View Live Photo Gallery](https://exactspace-assignment-project-2-rea.vercel.app/)** |
+
+* **GitHub Repository**: [https://github.com/suhashkowsick1234/exactspace-assignment](https://github.com/suhashkowsick1234/exactspace-assignment)
+
+---
+
 ## 📋 Table of Contents
 
+- [Live Production Deployments](#-live-production-deployments)
 - [Overview](#-overview)
 - [Project 1 — React Chat App](#-project-1--react-chat-app)
 - [Project 2 — React Photo Gallery](#-project-2--react-photo-gallery)
@@ -246,7 +258,10 @@ npm run build
 
 ## 📦 GitHub Repository Information
 
-- **Repository Name**: `exactspace-ui-assignment`
+- **Repository**: [https://github.com/suhashkowsick1234/exactspace-assignment](https://github.com/suhashkowsick1234/exactspace-assignment)
+- **Live Deployments**:
+  - Project 1: [https://exactspace-assignment-project-1-rea.vercel.app/](https://exactspace-assignment-project-1-rea.vercel.app/)
+  - Project 2: [https://exactspace-assignment-project-2-rea.vercel.app/](https://exactspace-assignment-project-2-rea.vercel.app/)
 - **Structure**: Root folder containing `Project 1 - React Chat App/`, `Project 2 - React Photo Gallery/`, and root `README.md`.
 - **Clean Distribution**: Excludes `node_modules`, build artifacts, or environment secrets via standard `.gitignore` rules.
 - **Submission Note**: Ready for final review.

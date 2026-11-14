@@ -2,6 +2,8 @@
 
 A single-page, infinite scrolling photo gallery engineered as part of the **Exactspace UI Developer Internship Technical Assessment**.
 
+🌐 **Live Vercel Deployment**: [https://exactspace-assignment-project-2-rea.vercel.app/](https://exactspace-assignment-project-2-rea.vercel.app/)
+
 ---
 
 ## 🌟 Overview & Key Features

@@ -2,6 +2,8 @@
 
 A single-page, real-time-styled React chat application built as part of the **Exactspace UI Developer Internship Technical Assessment**.
 
+🌐 **Live Vercel Deployment**: [https://exactspace-assignment-project-1-rea.vercel.app/](https://exactspace-assignment-project-1-rea.vercel.app/)
+
 ---
 
 ## 🌟 Overview & Key Features
