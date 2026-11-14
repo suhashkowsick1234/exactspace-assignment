@@ -2,8 +2,7 @@ import React, { memo } from 'react';
 import { USER_COLORS } from '../hooks/useChat';
 
 function formatMessageText(text) {
-  // Regex to detect @Username mentions
-  const mentionRegex = /(@[A-Za-z0-9_]+)/g;
+  const mentionRegex = /(@[A-Za-z0-9_ ]+?\b)/g;
   const parts = text.split(mentionRegex);
 
   return parts.map((part, index) => {
@@ -18,61 +17,74 @@ function formatMessageText(text) {
   });
 }
 
-function ChatMessage({ message, onLike }) {
-  const { id, username, text, likes, timestamp } = message;
-  const userColors = USER_COLORS[username] || { bg: '#E5E7EB', text: '#374151', border: '#D1D5DB' };
-  const initial = username ? username.charAt(0).toUpperCase() : '?';
+function ChatMessage({ message, onLike, currentUserName }) {
+  const { id, username, initials, avatarBg, text, likes = 0, likedBy = [], timestamp } = message;
+
+  const fallbackUser = USER_COLORS[username] || {
+    bg: '#64748B',
+    text: '#FFFFFF',
+    initials: username ? username.slice(0, 2).toUpperCase() : '??'
+  };
+
+  const displayInitials = initials || fallbackUser.initials;
+  const displayBg = avatarBg || fallbackUser.bg;
+  const hasLikedByMe = Array.isArray(likedBy) && likedBy.includes(currentUserName);
 
   return (
-    <article className="chat-message-row" data-message-id={id}>
+    <article className="pubnub-message-row" data-message-id={id}>
+      {/* Sender Avatar */}
       <div
-        className="user-avatar"
-        style={{
-          backgroundColor: userColors.bg,
-          color: userColors.text,
-          borderColor: userColors.border
-        }}
-        title={`Avatar for ${username}`}
-        aria-hidden="true"
+        className="message-avatar"
+        style={{ backgroundColor: displayBg, color: '#FFFFFF' }}
+        title={username}
       >
-        {initial}
+        {displayInitials}
       </div>
 
-      <div className="message-content-wrapper">
-        <div className="message-meta">
-          <span className="message-author" style={{ color: userColors.text }}>
-            {username}
-          </span>
-          {timestamp && <span className="message-time">{timestamp}</span>}
+      {/* Message Content Area */}
+      <div className="message-content-col">
+        {/* Author & Timestamp Header */}
+        <div className="message-header-line">
+          <span className="message-author-name">{username}</span>
+          {timestamp && <span className="message-timestamp">{timestamp}</span>}
         </div>
 
-        <div className="message-body">
-          <p className="message-text">{formatMessageText(text)}</p>
-        </div>
-      </div>
+        {/* Message Bubble */}
+        <div className="message-bubble-wrapper">
+          <div className="message-bubble">
+            <span className="bubble-text">{formatMessageText(text)}</span>
+          </div>
 
-      <div className="message-actions">
-        <button
-          type="button"
-          className={`like-button ${likes > 0 ? 'liked' : ''}`}
-          onClick={() => onLike(id)}
-          title={`Like this message by ${username}`}
-          aria-label={`Like message by ${username}. Current likes: ${likes}`}
-        >
-          <svg
-            className="like-icon"
-            viewBox="0 0 24 24"
-            fill={likes > 0 ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
+          {/* Like Reaction Button (Strictly 1 like per person) */}
+          <button
+            type="button"
+            className={`message-like-btn ${hasLikedByMe ? 'has-liked' : ''} ${likes > 0 ? 'active' : ''}`}
+            onClick={() => onLike(id)}
+            title={
+              hasLikedByMe
+                ? 'You liked this message (click to unlike)'
+                : `Like this message (1 like per person)`
+            }
+            aria-label={
+              hasLikedByMe
+                ? 'Unlike message'
+                : 'Like message'
+            }
           >
-            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-          </svg>
-          <span className="like-count">{likes}</span>
-        </button>
+            <svg
+              className="like-svg-icon"
+              viewBox="0 0 24 24"
+              fill={hasLikedByMe ? '#3B82F6' : 'none'}
+              stroke={hasLikedByMe ? '#3B82F6' : 'currentColor'}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+            </svg>
+            {likes > 0 && <span className="like-counter-text">{likes}</span>}
+          </button>
+        </div>
       </div>
     </article>
   );

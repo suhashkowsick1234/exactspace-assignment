@@ -250,3 +250,4 @@ npm run build
 - **Structure**: Root folder containing `Project 1 - React Chat App/`, `Project 2 - React Photo Gallery/`, and root `README.md`.
 - **Clean Distribution**: Excludes `node_modules`, build artifacts, or environment secrets via standard `.gitignore` rules.
 - **Submission Note**: Ready for final review.
+

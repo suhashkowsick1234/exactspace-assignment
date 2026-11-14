@@ -5,6 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5174,
-    open: false
+    open: false,
+    proxy: {
+      '/picsum-proxy': {
+        target: 'https://picsum.photos',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/picsum-proxy/, '')
+      }
+    }
   }
 });

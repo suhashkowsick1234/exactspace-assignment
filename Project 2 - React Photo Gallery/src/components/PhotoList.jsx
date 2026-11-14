@@ -14,28 +14,24 @@ export default function PhotoList({
 }) {
   const sentinelRef = useRef(null);
 
-  // IntersectionObserver implementation for infinite scrolling
   useEffect(() => {
-    // If IntersectionObserver is not available in environment, exit early
-    if (typeof IntersectionObserver === 'undefined') {
-      return;
-    }
+    if (typeof IntersectionObserver === 'undefined') return;
 
     const sentinelEl = sentinelRef.current;
     if (!sentinelEl) return;
 
+    // 900px pre-fetch margin: triggers well in advance so next photos appear instantly
     const observer = new IntersectionObserver(
       (entries) => {
-        const firstEntry = entries[0];
-        // When sentinel enters viewport and we can load more photos
-        if (firstEntry.isIntersecting && hasMore && !isLoading && !error) {
+        const first = entries[0];
+        if (first.isIntersecting && hasMore && !isLoading && !error) {
           onLoadMore();
         }
       },
       {
-        root: null, // viewport
-        rootMargin: '250px', // Pre-fetch slightly before reaching exact bottom
-        threshold: 0.1
+        root: null,
+        rootMargin: '900px',
+        threshold: 0.05
       }
     );
 
@@ -47,9 +43,9 @@ export default function PhotoList({
   }, [hasMore, isLoading, error, onLoadMore]);
 
   return (
-    <main className="gallery-main-container">
-      {/* Photo Cards Single Column Feed */}
-      <div className="photo-feed" role="feed" aria-label="Photo gallery feed">
+    <div className="photo-gallery-list">
+      {/* 1 Column Photo Feed */}
+      <div className="photo-feed-column">
         {photos.map((photo) => (
           <PhotoCard
             key={photo.id}
@@ -59,61 +55,31 @@ export default function PhotoList({
         ))}
       </div>
 
-      {/* Loading state indicator */}
+      {/* Loading Indicator */}
       {isLoading && (
-        <LoadingIndicator
-          text={photos.length === 0 ? 'Fetching initial photos...' : 'Loading next page of photos...'}
-        />
+        <LoadingIndicator text="Loading more photos..." />
       )}
 
-      {/* Error state with retry action */}
+      {/* Error Message with Retry */}
       {error && !isLoading && (
         <ErrorMessage message={error} onRetry={onRetry} />
       )}
 
-      {/* End of results message */}
+      {/* End of results */}
       {!hasMore && photos.length > 0 && !isLoading && (
-        <div className="end-of-gallery-notice">
-          <span className="end-icon">✨</span>
-          <h3>You have reached the end</h3>
-          <p>All available photos have been loaded from the Picsum catalogue.</p>
+        <div className="gallery-end-notice">
+          <p>No more photos to load.</p>
         </div>
       )}
 
-      {/* Empty State */}
-      {!isLoading && !error && photos.length === 0 && (
-        <div className="empty-gallery-notice">
-          <p>No photos available at the moment.</p>
-          {onRetry && (
-            <button type="button" className="retry-button" onClick={onRetry}>
-              Refresh
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* IntersectionObserver Sentinel Element */}
+      {/* Sentinel Element for IntersectionObserver */}
       {hasMore && !error && (
         <div
           ref={sentinelRef}
-          className="sentinel-anchor"
-          style={{ height: '20px', width: '100%', margin: '10px 0' }}
-          aria-hidden="true"
+          className="gallery-sentinel"
+          style={{ height: '30px', width: '100%', margin: '20px 0' }}
         />
       )}
-
-      {/* Fallback button if IntersectionObserver is unavailable or fails to trigger */}
-      {typeof IntersectionObserver === 'undefined' && hasMore && !isLoading && (
-        <div className="manual-load-fallback">
-          <button
-            type="button"
-            className="manual-load-more-btn"
-            onClick={onLoadMore}
-          >
-            Load More Photos
-          </button>
-        </div>
-      )}
-    </main>
+    </div>
   );
 }

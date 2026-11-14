@@ -4,26 +4,24 @@ import { USER_COLORS } from '../hooks/useChat';
 export default function MentionSuggestions({
   suggestions,
   selectedIndex,
+  onSelect,
   onSelectUser,
   query
 }) {
   const listRef = useRef(null);
+  const handleSelect = onSelect || onSelectUser;
 
   useEffect(() => {
     if (listRef.current && suggestions.length > 0) {
-      const activeItem = listRef.current.children[selectedIndex];
+      const activeItem = listRef.current.children[selectedIndex + 1];
       if (activeItem) {
         activeItem.scrollIntoView({ block: 'nearest' });
       }
     }
   }, [selectedIndex, suggestions.length]);
 
-  if (suggestions.length === 0) {
-    return (
-      <div className="mention-dropdown no-matches" role="listbox">
-        <div className="mention-item-empty">No matching users found for "{query}"</div>
-      </div>
-    );
+  if (!suggestions || suggestions.length === 0) {
+    return null;
   }
 
   return (
@@ -31,7 +29,7 @@ export default function MentionSuggestions({
       <div className="mention-header">Matching team members</div>
       {suggestions.map((user, index) => {
         const isSelected = index === selectedIndex;
-        const colors = USER_COLORS[user] || { bg: '#E5E7EB', text: '#374151' };
+        const colors = USER_COLORS[user] || { bg: '#E5E7EB', text: '#374151', initials: user.slice(0, 2) };
 
         return (
           <div
@@ -40,19 +38,20 @@ export default function MentionSuggestions({
             aria-selected={isSelected}
             className={`mention-item ${isSelected ? 'active' : ''}`}
             onMouseDown={(e) => {
-              // Use onMouseDown so it fires before input blur
               e.preventDefault();
-              onSelectUser(user);
+              handleSelect(user);
             }}
           >
             <span
               className="mention-avatar-mini"
               style={{ backgroundColor: colors.bg, color: colors.text }}
             >
-              {user.charAt(0)}
+              {colors.initials || user.slice(0, 2).toUpperCase()}
             </span>
-            <span className="mention-username">{user}</span>
-            <span className="mention-tag-hint">@{user}</span>
+            <div className="mention-name-col">
+              <span className="mention-username">{user}</span>
+              {colors.role && <span className="mention-user-role">{colors.role}</span>}
+            </div>
           </div>
         );
       })}

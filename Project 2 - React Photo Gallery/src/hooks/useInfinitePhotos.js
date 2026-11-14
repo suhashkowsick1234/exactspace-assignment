@@ -1,36 +1,32 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchPhotosPage } from '../services/picsumApi';
+import { useState, useCallback, useRef } from 'react';
+import { fetchPhotosPage, INITIAL_DEMO_PHOTOS } from '../services/picsumApi';
 
 export function useInfinitePhotos() {
-  const [photos, setPhotos] = useState([]);
-  const [page, setPage] = useState(1);
+  // Start with INITIAL_DEMO_PHOTOS initialized with likes: 0, hasLiked: false
+  const [photos, setPhotos] = useState(() =>
+    INITIAL_DEMO_PHOTOS.map((p) => ({ ...p, likes: 0, hasLiked: false }))
+  );
+  const [page, setPage] = useState(2);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
-  // Tracking refs to avoid race conditions and StrictMode double-triggers
   const isFetchingRef = useRef(false);
-  const seenIdsRef = useRef(new Set());
+  const seenIdsRef = useRef(new Set(INITIAL_DEMO_PHOTOS.map((p) => p.id)));
   const abortControllerRef = useRef(null);
 
-  const fetchPage = useCallback(async (pageToFetch) => {
-    // Prevent simultaneous or redundant requests
-    if (isFetchingRef.current) return;
+  const loadMore = useCallback(async () => {
+    if (isFetchingRef.current || !hasMore || isLoading) return;
     isFetchingRef.current = true;
     setIsLoading(true);
     setError(null);
 
-    // Cancel any in-flight request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
     try {
-      const data = await fetchPhotosPage(pageToFetch, 15, controller.signal);
+      const data = await fetchPhotosPage(page, controller.signal);
 
-      // Check for end of pagination (empty response)
       if (!data || data.length === 0) {
         setHasMore(false);
         setIsLoading(false);
@@ -38,68 +34,64 @@ export function useInfinitePhotos() {
         return;
       }
 
-      // Filter out duplicate photos and initialize likes: 0
       const newPhotos = [];
       data.forEach((photo) => {
         if (!seenIdsRef.current.has(photo.id)) {
           seenIdsRef.current.add(photo.id);
           newPhotos.push({
             ...photo,
-            likes: 0
+            likes: 0,
+            hasLiked: false
           });
         }
       });
 
       if (newPhotos.length === 0) {
-        // All photos in this page were duplicates or end reached
         setHasMore(false);
       } else {
-        // Strictly append to existing photos (never replace!)
         setPhotos((prev) => [...prev, ...newPhotos]);
-        // Increment page on success
-        setPage(pageToFetch + 1);
+        setPage((prevPage) => prevPage + 1);
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
-        setError(err.message || 'Failed to fetch photos. Please check your network connection.');
+        setError(err.message || 'Failed to fetch photos.');
       }
     } finally {
       setIsLoading(false);
       isFetchingRef.current = false;
     }
-  }, []);
+  }, [hasMore, isLoading, page]);
 
-  // Initial load for Page 1
-  useEffect(() => {
-    fetchPage(1);
-
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, [fetchPage]);
-
-  // Triggered by IntersectionObserver when sentinel is visible
-  const loadMore = useCallback(() => {
-    if (!isLoading && hasMore && !error) {
-      fetchPage(page);
-    }
-  }, [isLoading, hasMore, error, fetchPage, page]);
-
-  // Retry fetching the current page after failure
   const retry = useCallback(() => {
-    if (!isLoading) {
-      fetchPage(page);
-    }
-  }, [isLoading, fetchPage, page]);
+    loadMore();
+  }, [loadMore]);
 
-  // Individual photo like handler
+  /**
+   * FIX 1: Strictly 1 like per person per picture.
+   * If already liked, clicking again toggles it off (0 likes).
+   * If not liked, increments to 1 like. Cannot exceed 1 like per person!
+   */
   const likePhoto = useCallback((photoId) => {
     setPhotos((prevPhotos) =>
-      prevPhotos.map((photo) =>
-        photo.id === photoId ? { ...photo, likes: photo.likes + 1 } : photo
-      )
+      prevPhotos.map((photo) => {
+        if (photo.id !== photoId) return photo;
+        const alreadyLiked = Boolean(photo.hasLiked);
+        if (alreadyLiked) {
+          // Unlike: 1 -> 0
+          return {
+            ...photo,
+            likes: Math.max(0, (photo.likes || 1) - 1),
+            hasLiked: false
+          };
+        } else {
+          // Like: strictly 1 like only per person!
+          return {
+            ...photo,
+            likes: (photo.likes || 0) + 1,
+            hasLiked: true
+          };
+        }
+      })
     );
   }, []);
 
@@ -110,7 +102,6 @@ export function useInfinitePhotos() {
     hasMore,
     loadMore,
     retry,
-    likePhoto,
-    isInitialLoading: isLoading && photos.length === 0
+    likePhoto
   };
 }

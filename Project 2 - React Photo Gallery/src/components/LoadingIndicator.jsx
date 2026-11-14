@@ -8,3 +8,4 @@ export default function LoadingIndicator({ text = 'Loading more inspiring photos
     </div>
   );
 }
+

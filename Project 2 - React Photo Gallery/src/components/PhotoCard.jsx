@@ -1,95 +1,48 @@
 import React, { useState, memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
-import { faThumbsUp as faThumbsUpRegular } from '@fortawesome/free-regular-svg-icons';
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 function PhotoCard({ photo, onLike }) {
-  const { id, author, download_url, likes } = photo;
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const { id, author, download_url, likes = 0, hasLiked = false } = photo;
+  const [hasError, setHasError] = useState(false);
 
-  // Author initials for avatar
-  const authorInitials = author
-    ? author
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase()
-    : 'PH';
+  // Safe fallback image if download_url fails
+  const imgSrc = hasError
+    ? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80'
+    : download_url;
 
   return (
-    <article className="photo-card" data-photo-id={id}>
-      {/* Header with author info */}
-      <div className="photo-card-header">
-        <div className="author-avatar" aria-hidden="true">
-          {authorInitials}
-        </div>
-        <div className="author-info">
-          <h2 className="author-name">{author}</h2>
-          <span className="photo-id-tag">Photo #{id}</span>
-        </div>
+    <article className="photo-gallery-row" data-photo-id={id}>
+      {/* Left Thumbnail with clean modern framing */}
+      <div className="photo-thumb-container">
+        <img
+          src={imgSrc}
+          alt={`Captured by ${author}`}
+          className="photo-thumb-image"
+          loading="lazy"
+          onError={() => {
+            if (!hasError) {
+              setHasError(true);
+            }
+          }}
+        />
       </div>
 
-      {/* Main Image Container */}
-      <div className="photo-media-container">
-        {!imageLoaded && !imageError && (
-          <div className="image-skeleton" aria-label="Loading image...">
-            <div className="skeleton-shimmer"></div>
-          </div>
-        )}
+      {/* Right Information & Action Column */}
+      <div className="photo-info-col">
+        <span className="photo-author-label">Author: {author}</span>
 
-        {imageError ? (
-          <div className="image-fallback">
-            <span className="fallback-icon">⚠️</span>
-            <p>Image preview unavailable</p>
-          </div>
-        ) : (
-          <img
-            src={download_url}
-            alt={`Captured by ${author}`}
-            className={`photo-image ${imageLoaded ? 'loaded' : 'loading'}`}
-            loading="lazy"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => {
-              setImageLoaded(true);
-              setImageError(true);
-            }}
-          />
-        )}
-      </div>
-
-      {/* Photo Footer with Font Awesome Thumbs-Up Like Action */}
-      <div className="photo-card-footer">
-        <div className="photo-actions">
-          <button
-            type="button"
-            className={`like-action-btn ${likes > 0 ? 'active' : ''}`}
-            onClick={() => onLike(id)}
-            title={`Like photo by ${author}`}
-            aria-label={`Like photo by ${author}. Currently has ${likes} likes.`}
-          >
-            <FontAwesomeIcon
-              icon={likes > 0 ? faThumbsUpSolid : faThumbsUpRegular}
-              className="thumbs-up-icon"
-            />
-            <span className="like-counter-text">
-              {likes} {likes === 1 ? 'Like' : 'Likes'}
-            </span>
-          </button>
-        </div>
-
-        <div className="photo-meta-info">
-          <a
-            href={download_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="view-original-link"
-            title="Open full resolution image in new tab"
-          >
-            Full Res ↗
-          </a>
-        </div>
+        {/* 1 Like per person button */}
+        <button
+          type="button"
+          className={`thumbs-up-btn ${hasLiked ? 'has-liked' : ''}`}
+          onClick={() => onLike(id)}
+          title={hasLiked ? 'You liked this (click to unlike)' : 'Like (strictly 1 like per person)'}
+          aria-label={hasLiked ? 'Unlike photo' : 'Like photo'}
+        >
+          <FontAwesomeIcon icon={faThumbsUp} className="fa-thumbs-up-icon" />
+          <span className="thumbs-up-counter">{likes}</span>
+        </button>
       </div>
     </article>
   );
